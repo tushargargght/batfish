@@ -169,7 +169,7 @@ public class L3AdjacencyComputer {
     ImmutableMap.Builder<VxlanNode, L2VNI> ret = ImmutableMap.builder();
     for (Configuration c : configs.values()) {
       DeviceBroadcastDomain domain = domains.get(c.getHostname());
-      verify(domain != null, "Broadcat domain not yet created for device %s", c.getHostname());
+      verify(domain != null, "Broadcast domain not yet created for device %s", c.getHostname());
       for (Vrf vrf : c.getVrfs().values()) {
         for (Layer2Vni vniSettings : vrf.getLayer2Vnis().values()) {
           VxlanNode node = new VxlanNode(c.getHostname(), vniSettings.getVni(), VniLayer.LAYER_2);

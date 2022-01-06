@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.batfish.datamodel.AclIpSpace;
 import org.batfish.datamodel.ConcreteInterfaceAddress;
 import org.batfish.datamodel.Configuration;
@@ -43,6 +45,7 @@ import org.batfish.datamodel.tracking.TrackMethod;
 
 /** A utility class for working with IPs owned by network devices. */
 public final class IpOwners {
+  private static final Logger LOGGER = LogManager.getLogger(IpOwners.class);
 
   /**
    * Mapping from a IP to hostname to set of interfaces that own that IP (including inactive
@@ -408,15 +411,13 @@ public final class IpOwners {
                                 (Interface o) -> o.getVrrpGroups().get(vrid).getPriority())
                             .thenComparing(o -> o.getConcreteAddress().getIp())
                             .thenComparing(o -> NodeInterfacePair.of(o)));
-                ipSpaceByCandidate
-                    .get(vrrpMaster)
-                    .forEach(
-                        ip ->
-                            ipOwners
-                                .computeIfAbsent(ip, k -> new HashMap<>())
-                                .computeIfAbsent(
-                                    vrrpMaster.getOwner().getHostname(), k -> new HashSet<>())
-                                .add(vrrpMaster.getName()));
+                for (Ip ip : ipSpaceByCandidate.get(vrrpMaster)) {
+                  LOGGER.info("ip: " + ip + " master: " + NodeInterfacePair.of(vrrpMaster));
+                  ipOwners
+                      .computeIfAbsent(ip, k -> new HashMap<>())
+                      .computeIfAbsent(vrrpMaster.getOwner().getHostname(), k -> new HashSet<>())
+                      .add(vrrpMaster.getName());
+                }
               });
         });
   }
