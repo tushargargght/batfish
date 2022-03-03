@@ -289,7 +289,7 @@ public class FileBasedStorage implements StorageProvider {
 
   @VisibleForTesting
   static boolean keyInDir(String key, String dirName) {
-    return key.startsWith(dirName + "/");
+    return key.startsWith(dirName + "\\");
   }
 
   @Override
